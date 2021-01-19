@@ -1,0 +1,19 @@
+{% extends 'layout.html' %}
+
+{% block body%}
+
+<div class="starter-template text-center py-5 px-3">
+    <h1>Web Scrapping webApp</h1>
+    <p class="lead">Price Drop Tracker<br> Automatically alerts the user if the product's price drops by its previous value.</p>
+    <p>{% for user in users %}
+      <a href="#">
+          <h2>{{ user['name'] }}</h2>
+      </a>
+      <span class="badge badge-primary">{{ user['email'] }}</span>
+      <span class="badge badge-primary">{{ user['username'] }}</span>
+      <span class="badge badge-primary">{{ user['password'] }}</span>
+      <hr>
+  {% endfor %}</p>
+  </div>
+
+{% endblock %}
