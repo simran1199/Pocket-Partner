@@ -3,7 +3,7 @@
 {% block body %}
 <h1>Register</h1>
 {% from "Includes/_formhelpers.html" import render_field %}
-<form method= 'POST' action=" ">
+<form method='POST' action=" ">
     <div class="form.group">
         {{render_field(form.name, class_="form-control")}}
     </div>
@@ -19,7 +19,7 @@
     <div class="form.group">
         {{render_field(form.confirm, class_="form-control")}}
     </div>
-    <p><input type="submit" class ="btn btn-primary" value="Submit"></p>
-</form>    
+    <p><input type="submit" class="btn btn-primary" value="Submit"></p>
+</form>
 
 {% endblock %}
