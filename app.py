@@ -2,6 +2,7 @@ import sqlite3
 from flask import Flask, render_template, flash, redirect, url_for, session, request, logging
 from wtforms import Form, StringField, TextAreaField, PasswordField, validators
 from passlib.hash import sha256_crypt
+from functools import wraps
 
 
 def get_db_connection():
@@ -16,6 +17,7 @@ app = Flask(__name__)
 @app.route('/')
 def index():
     conn = get_db_connection()
+
     users = conn.execute('SELECT * FROM users').fetchall()
     conn.close()
     return render_template("home.html", users=users)
@@ -40,6 +42,7 @@ def register():
         email = form.email.data
         username = form.username.data
         password = sha256_crypt.hash(str(form.password.data))
+        print(str(form.password.data)+': '+password)
         conn = get_db_connection()
         users = conn.execute("INSERT INTO users (name, email, username, password) VALUES (?, ?, ?, ?)",
                              (name, email, username, password))
@@ -49,8 +52,53 @@ def register():
         flash("Registration done!!", "success")
         return redirect(url_for('index'))
 
-        return render_template('register.html', users=users)
+        return render_template("register.html", users=users)
+
     return render_template('register.html', form=form)
+
+# User Login
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        # Get Form Fields
+        email = request.form['email']
+        password = request.form['password']
+
+        # Create cursor
+        conn = get_db_connection()
+        cur = conn.cursor()
+
+        # Get user by username
+        find_user = ("SELECT * FROM users WHERE email = ?")
+        cur.execute(find_user, [email])
+        results = cur.fetchone()
+        if results:
+            if sha256_crypt.verify(password, results['password']):
+                # Passed
+                session["logged_in"] = True
+                session["email"] = email
+                session["name"] = results['name']
+
+                flash("You are now logged in.", "success")
+                return redirect(url_for("dashboard"))
+            else:
+                error = "Invalid login"
+                return render_template("login.html", error=error)
+            # Cose connection
+            cur.close()
+
+        else:
+            error = "Email not found."
+            return render_template("login.html", error=error)
+
+    return render_template('login.html')
+
+
+@app.route('/dashboard')
+def dashboard():
+    return render_template("dashboard.html")
 
 
 if __name__ == "__main__":
