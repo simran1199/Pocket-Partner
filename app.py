@@ -95,8 +95,30 @@ def login():
 
     return render_template('login.html')
 
+# check if user is logged in
+
+
+def is_logged_in(f):
+    @wraps(f)
+    def wrap(*args, **kwargs):
+        if "logged_in" in session:
+            return f(*args, **kwargs)
+        else:
+            flash("Unauthorised , Please login", 'danger')
+            return redirect(url_for("login"))
+    return wrap
+
+
+# logout
+@app.route("/logout")
+def logout():
+    session.clear()
+    flash("You are now logout.", "success")
+    return redirect(url_for("login"))
+
 
 @app.route('/dashboard')
+@is_logged_in
 def dashboard():
     return render_template("dashboard.html")
 
