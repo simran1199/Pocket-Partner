@@ -10,9 +10,11 @@
     <a href="#">
       <h2>{{ user['name'] }}</h2>
     </a>
+    <span class="badge badge-primary">{{ user['id'] }}</span>
     <span class="badge badge-primary">{{ user['email'] }}</span>
     <span class="badge badge-primary">{{ user['username'] }}</span>
     <span class="badge badge-primary">{{ user['password'] }}</span>
+    <span class="badge badge-primary">{{ user['register_date'] }}</span>
     <hr>
     {% endfor %}
   </p>
