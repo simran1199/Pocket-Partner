@@ -29,11 +29,12 @@ class RegisterForm(Form):
     email = StringField('Email', [validators.Length(min=6, max=50)])
     password = PasswordField('Password', [
         validators.DataRequired(),
-        validators.EqualTo('confirm', message='Passwords do not match')
+        validators.EqualTo('confirm', message='Passwords do not match!!')
     ])
-    confirm = PasswordField('confirm Password')
+    confirm = PasswordField('Confirm Password')
 
 
+# registration route
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     form = RegisterForm(request.form)
@@ -44,21 +45,19 @@ def register():
         password = sha256_crypt.hash(str(form.password.data))
         print(str(form.password.data)+': '+password)
         conn = get_db_connection()
-        users = conn.execute("INSERT INTO users (name, email, username, password) VALUES (?, ?, ?, ?)",
-                             (name, email, username, password))
+        conn.execute("INSERT INTO users (name, email, username, password) VALUES (?, ?, ?, ?)",
+                     (name, email, username, password))
         conn.commit()
         conn.close()
-
-        flash("Registration done!!", "success")
+        flash("You are now registered and can Login", "success")
         return redirect(url_for('index'))
-
-        return render_template("register.html", users=users)
 
     return render_template('register.html', form=form)
 
 # User Login
 
 
+# User-Login route
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -86,30 +85,29 @@ def login():
             else:
                 error = "Invalid login"
                 return render_template("login.html", error=error)
-            # Cose connection
+            # Close connection
             cur.close()
 
         else:
-            error = "Email not found."
+            error = "Email not found!!"
             return render_template("login.html", error=error)
 
     return render_template('login.html')
 
+
 # check if user is logged in
-
-
 def is_logged_in(f):
     @wraps(f)
     def wrap(*args, **kwargs):
         if "logged_in" in session:
             return f(*args, **kwargs)
         else:
-            flash("Unauthorised , Please login", 'danger')
+            flash("Unauthorised, Please login to continue!!", 'danger')
             return redirect(url_for("login"))
     return wrap
 
 
-# logout
+# logout route
 @app.route("/logout")
 def logout():
     session.clear()
@@ -117,6 +115,7 @@ def logout():
     return redirect(url_for("login"))
 
 
+# dashboard
 @app.route('/dashboard')
 @is_logged_in
 def dashboard():
