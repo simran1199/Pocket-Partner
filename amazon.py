@@ -5,7 +5,7 @@ import re
 from time import sleep
 
 
-# Create an Extractor by reading from the YAML file
+# Creating an Extractor by reading from the YAML file
 e = Extractor.from_yaml_file('selectors.yml')
 
 def get_converted_price(price):
