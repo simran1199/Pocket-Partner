@@ -3,6 +3,7 @@ from flask import Flask, render_template, flash, redirect, url_for, session, req
 from wtforms import Form, StringField, TextAreaField, PasswordField, validators
 from passlib.hash import sha256_crypt
 from functools import wraps
+from amazon import get_product_details
 
 
 def get_db_connection():
@@ -121,6 +122,14 @@ def logout():
 @is_logged_in
 def dashboard():
     return render_template("dashboard.html")
+
+
+# This is not going to be an endpoint, used only for testing scrapper
+# @app.route('/scrape',methods=['POST'])
+# def scrapeURL():
+#     detail = get_product_details(request.form['url'])
+#     print (detail)
+#     return render_template("dashboard.html",detail = detail)
 
 
 if __name__ == "__main__":

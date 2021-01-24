@@ -1,7 +1,26 @@
-{% extends 'layout.html' %}
-
-
-{% block body %}
+{% extends 'layout.html' %} {% block body %}
 
 <h1>Dashboard</h1>
+<div class="text-muted">Enter the url to be scraped.</div>
+<div class="container text-center">
+  <form method="POST" action="/scrape">
+    <div class="form-group">
+      <label>URL: </label>
+      <input type="text" name="url" class="form-control" />
+    </div>
+    <input type="submit" value="Scrape" class="btn btn-danger" />
+  </form>
+</div>
+{% if detail %}
+<div class="container">
+  Previous Search Result Rendered the following:<br />
+  <h3 class="text-muted">Name:</h3>
+  {{detail['name']}} <br />
+  <h3 class="text-muted">Price:</h3>
+  {% if detail['price'] %} {{detail['price']}} {%else%} {{detail['resprice']}} {% endif %}
+  <br />
+  <h3 class="text-muted">Previous URL:</h3>
+  {{detail['url']}} <br />
+</div>
+{% endif %} 
 {% endblock %}
