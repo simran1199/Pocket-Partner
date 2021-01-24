@@ -1,0 +1,9 @@
+name:
+  css: '#productTitle'
+  type: Text
+price:
+  css: '#priceblock_dealprice'
+  type: Text
+resprice:
+  css: '#priceblock_ourprice'
+  type: Text
