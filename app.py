@@ -3,7 +3,7 @@ from flask import Flask, render_template, flash, redirect, url_for, session, req
 from wtforms import Form, StringField, TextAreaField, PasswordField, validators
 from passlib.hash import sha256_crypt
 from functools import wraps
-from amazon import get_product_details
+from scrapper import get_product_details
 
 
 def get_db_connection():
@@ -126,7 +126,11 @@ class LinkForm(Form):
 @app.route('/dashboard')
 @is_logged_in
 def dashboard():
-    return render_template("dashboard.html")
+    conn = get_db_connection()
+    links = conn.execute('SELECT * FROM links WHERE userid = ?',
+                         [session['userid']]).fetchall()
+    conn.close()
+    return render_template("dashboard.html", links=links)
 
 
 # This is not going to be an endpoint, used only for testing scrapper
@@ -138,8 +142,31 @@ def scrapeURL():
     print(detail)
     return render_template("dashboard.html", detail=detail)
 
+# add delete
+
+
+@app.route('/delete/<string:id>', methods=['POST'])
+@is_logged_in
+def delete_url(id):
+    # Create cursor
+    cur = get_db_connection()
+
+    # Execute
+    cur.execute("DELETE FROM links WHERE id = ?", [id])
+
+    # Commit to DB
+    cur.commit()
+
+    # Close connection
+    cur.close()
+
+    flash('URL Deleted', 'success')
+
+    return redirect(url_for('dashboard'))
 
 # add url route
+
+
 @app.route('/add', methods=['GET', 'POST'])
 @is_logged_in
 def add_url():
@@ -151,17 +178,15 @@ def add_url():
         print(detail)
         # Create cursor
         conn = get_db_connection()
-        cur = conn.cursor()
 
-        cur.execute('INSERT INTO links (url,product,price,userid) VALUES(?,?,?,?)',
-                    {detail['url'], detail['name'], detail['price'], userid})
+        conn.execute("INSERT INTO links(url ,product, price, userid) VALUES(?,?,?,?)",
+                     (detail['url'], detail['name'], detail['price'], userid))
 
         # connection commit
-        cur.commit()
-        cur.close()
-
+        conn.commit()
+        conn.close()
+        redirect(url_for("dashboard"))
         flash("URL Added", 'success')
-        redirect(url_for('dashboard'))
 
     return render_template("addLink.html", form=form)
 
