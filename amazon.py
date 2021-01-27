@@ -51,14 +51,7 @@ def scrape(url):
             print("Page %s must have been blocked by Amazon as the status code was %d" % (
                 url, r.status_code))
         return None
-<<<<<<< HEAD
-    # Pass the HTML of the page and create 
-    text_file = open("sample.txt", "w")
-    n = text_file.write(r.text)
-    text_file.close()
-=======
     # Pass the HTML of the page and create
->>>>>>> ee0a4fe3f36393ba6cf218faf1471e3943e954a1
     return e.extract(r.text)
 
 
@@ -73,12 +66,7 @@ def get_product_details(url):
         if data['resprice']:
             data['resprice'] = get_converted_price(data['resprice'])
         return data
-<<<<<<< HEAD
-    
-print(get_product_details("https://www.amazon.in/Test-Exclusive_2020_1113-Multi-3GB-Storage/dp/B089MS8XQ3/ref=gbph_tit_m-6_0518_97497036?smid=AQUYM0O99MFUT&pf_rd_p=fd83c15d-292e-4558-a082-4513fc550518&pf_rd_s=merchandised-search-6&pf_rd_t=101&pf_rd_i=1389401031&pf_rd_m=A1VBAL9TL5WCBF&pf_rd_r=F5X8AE2M7C17EMY5JYAX"))
-=======
 
 # print(get_product_details("https://www.amazon.in/Test-Exclusive_2020_1113-Multi-3GB-Storage/dp/B089MS8XQ3/ref=gbph_tit_m-6_0518_97497036?smid=AQUYM0O99MFUT&pf_rd_p=fd83c15d-292e-4558-a082-4513fc550518&pf_rd_s=merchandised-search-6&pf_rd_t=101&pf_rd_i=1389401031&pf_rd_m=A1VBAL9TL5WCBF&pf_rd_r=F5X8AE2M7C17EMY5JYAX"))
->>>>>>> ee0a4fe3f36393ba6cf218faf1471e3943e954a1
 # print(get_product_details("https://www.amazon.in/dp/B07HGJJ58K/"))
 # print(get_product_details("https://www.amazon.in/Test-Exclusive_2020_1113-Multi-3GB-Storage/dp/B089MS8XQ3/ref=gbph_tit_m-6_0518_97497036?smid=AQUYM0O99MFUT&pf_rd_p=fd83c15d-292e-4558-a082-4513fc550518&pf_rd_s=merchandised-search-6&pf_rd_t=101&pf_rd_i=1389401031&pf_rd_m=A1VBAL9TL5WCBF&pf_rd_r=F5X8AE2M7C17EMY5JYAX"))
