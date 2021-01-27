@@ -80,6 +80,7 @@ def login():
                 session["logged_in"] = True
                 session["email"] = email
                 session["name"] = results['name']
+                session["userid"] = results['id']
 
                 flash("You are now logged in.", "success")
                 return redirect(url_for("dashboard"))
@@ -116,6 +117,11 @@ def logout():
     return redirect(url_for("login"))
 
 
+# Add new url //links form
+class LinkForm(Form):
+    url = StringField('Url')
+
+
 # dashboard
 @app.route('/dashboard')
 @is_logged_in
@@ -124,11 +130,40 @@ def dashboard():
 
 
 # This is not going to be an endpoint, used only for testing scrapper
-# @app.route('/scrape',methods=['POST'])
-# def scrapeURL():
-#     detail = get_product_details(request.form['url'])
-#     print (detail)
-#     return render_template("dashboard.html",detail = detail)
+@app.route('/scrape', methods=['POST'])
+def scrapeURL():
+
+    detail = get_product_details(request.form['url'])
+
+    print(detail)
+    return render_template("dashboard.html", detail=detail)
+
+
+# add url route
+@app.route('/add', methods=['GET', 'POST'])
+@is_logged_in
+def add_url():
+    form = LinkForm(request.form)
+    if request.method == 'POST':
+        url = form.url.data
+        userid = session["userid"]
+        detail = get_product_details(url)
+        print(detail)
+        # Create cursor
+        conn = get_db_connection()
+        cur = conn.cursor()
+
+        cur.execute('INSERT INTO links (url,product,price,userid) VALUES(?,?,?,?)',
+                    {detail['url'], detail['name'], detail['price'], userid})
+
+        # connection commit
+        cur.commit()
+        cur.close()
+
+        flash("URL Added", 'success')
+        redirect(url_for('dashboard'))
+
+    return render_template("addLink.html", form=form)
 
 
 if __name__ == "__main__":

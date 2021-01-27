@@ -2,6 +2,19 @@
 
 
 {% block body %}
+{% if session.logged_in %}
+<div class="container">
+    <h1>
+        Welcome, {{session.name}}!!
+    </h1>
+    <p class="text-muted">Email: {{session.email}} </p>
+    <a href="/add" class="btn btn-success">Add New</a>
+</div>
 
-<h1>Dashboard</h1>
+{% endif %}
+{% if detail %}
+<div class="container text-center">
+    {{detail}}
+</div>
+{% endif %}
 {% endblock %}
