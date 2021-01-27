@@ -3,7 +3,7 @@ from flask import Flask, render_template, flash, redirect, url_for, session, req
 from wtforms import Form, StringField, TextAreaField, PasswordField, validators
 from passlib.hash import sha256_crypt
 from functools import wraps
-from amazon import get_product_details
+from scrapper import get_product_details
 
 
 def get_db_connection():
@@ -18,6 +18,7 @@ app = Flask(__name__)
 @app.route('/')
 def index():
     conn = get_db_connection()
+
     users = conn.execute('SELECT * FROM users').fetchall()
     conn.close()
     return render_template("home.html", users=users)
@@ -54,6 +55,8 @@ def register():
 
     return render_template('register.html', form=form)
 
+# User Login
+
 
 # User-Login route
 @app.route('/login', methods=['GET', 'POST'])
@@ -77,6 +80,7 @@ def login():
                 session["logged_in"] = True
                 session["email"] = email
                 session["name"] = results['name']
+                session["userid"] = results['id']
 
                 flash("You are now logged in.", "success")
                 return redirect(url_for("dashboard"))
@@ -113,19 +117,78 @@ def logout():
     return redirect(url_for("login"))
 
 
+# Add new url //links form
+class LinkForm(Form):
+    url = StringField('Url')
+
+
 # dashboard
 @app.route('/dashboard')
 @is_logged_in
 def dashboard():
-    return render_template("dashboard.html")
+    conn = get_db_connection()
+    links = conn.execute('SELECT * FROM links WHERE userid = ?',
+                         [session['userid']]).fetchall()
+    conn.close()
+    return render_template("dashboard.html", links=links)
 
 
 # This is not going to be an endpoint, used only for testing scrapper
-# @app.route('/scrape',methods=['POST'])
-# def scrapeURL():
-#     detail = get_product_details(request.form['url'])
-#     print (detail)
-#     return render_template("dashboard.html",detail = detail)
+@app.route('/scrape', methods=['POST'])
+def scrapeURL():
+
+    detail = get_product_details(request.form['url'])
+
+    print(detail)
+    return render_template("dashboard.html", detail=detail)
+
+# add delete
+
+
+@app.route('/delete/<string:id>', methods=['POST'])
+@is_logged_in
+def delete_url(id):
+    # Create cursor
+    cur = get_db_connection()
+
+    # Execute
+    cur.execute("DELETE FROM links WHERE id = ?", [id])
+
+    # Commit to DB
+    cur.commit()
+
+    # Close connection
+    cur.close()
+
+    flash('URL Deleted', 'success')
+
+    return redirect(url_for('dashboard'))
+
+# add url route
+
+
+@app.route('/add', methods=['GET', 'POST'])
+@is_logged_in
+def add_url():
+    form = LinkForm(request.form)
+    if request.method == 'POST':
+        url = form.url.data
+        userid = session["userid"]
+        detail = get_product_details(url)
+        print(detail)
+        # Create cursor
+        conn = get_db_connection()
+
+        conn.execute("INSERT INTO links(url ,product, price, userid) VALUES(?,?,?,?)",
+                     (detail['url'], detail['name'], detail['price'], userid))
+
+        # connection commit
+        conn.commit()
+        conn.close()
+        redirect(url_for("dashboard"))
+        flash("URL Added", 'success')
+
+    return render_template("addLink.html", form=form)
 
 
 if __name__ == "__main__":

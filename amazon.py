@@ -3,6 +3,7 @@ import requests
 import json
 import re
 from time import sleep
+import sqlite3
 
 
 # Creating an Extractor by reading from the YAML file
