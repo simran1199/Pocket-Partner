@@ -178,6 +178,39 @@ def add_url():
     return render_template("addLink.html", form=form)
 
 
+# sorting based on price
+@app.route('/filter3')
+@is_logged_in
+def sorting3():
+    conn = get_db_connection()
+    links = conn.execute('SELECT * FROM links WHERE userid = ? ORDER BY price ASC',
+                         [session['userid']]).fetchall()
+    conn.close()
+    return render_template("dashboard.html", links=links)
+
+
+# sorting based on date(when the product was added)
+@app.route('/filter2')
+@is_logged_in
+def sorting2():
+    conn = get_db_connection()
+    links = conn.execute('SELECT * FROM links WHERE userid = ? ORDER BY link_date DESC',
+                         [session['userid']]).fetchall()
+    conn.close()
+    return render_template("dashboard.html", links=links)
+
+
+# sorting based on price
+@app.route('/filter1')
+@is_logged_in
+def sorting1():
+    conn = get_db_connection()
+    links = conn.execute('SELECT * FROM links WHERE userid = ? AND availability LIKE "%In Stock%"',
+                         [session['userid']]).fetchall()
+    conn.close()
+    return render_template("dashboard.html", links=links)
+
+
 if __name__ == "__main__":
     app.secret_key = 'secret123'
     app.run(debug=True)

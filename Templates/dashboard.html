@@ -1,23 +1,66 @@
 {% extends 'layout.html' %}
 {% block body %}
-<div class="row">
+<div class="row justify-content-md-center">
 
     {% if session.logged_in %}
-    <div class="mt-5 container col-4">
-        <h1>
-            Welcome, {{session.name}}!!
-        </h1>
-        <p class="text-muted">Email: {{session.email}} </p>
-        <a href="/add" class="btn btn-success">Add New</a>
+    <div class="mt-5 container text-center">
+        <div class="row">
+            <div class="col">
+                <h1>
+                    Welcome, {{session.name}}!!
+                </h1>
+                <p class="text-muted">Email: {{session.email}} </p>
+            </div>
+        </div>
+        
+        <div class="row justify-content-md-center">
+            <div class="col-7">
+                <h4>Choose the Shopping site for picking products : </h4>
+            </div>
+            <div class="col-1">
+                <a href="https://www.amazon.in/" class="btn btn-info btn-sm">AMAZON</a>
+            </div> 
+            <div class="col-1">
+                <a href="https://www.flipkart.com/" class="btn btn-info btn-sm">FLIPKART</a>
+            </div>       
+        </div> 
+
+        <div class="row justify-content-md-center">
+            <div class="col-7">
+                <h4>Add the new product by picking it's url : </h4>
+            </div>
+            <div class="col-2">
+                <a href="/add" class="btn btn-success btn-sm">Add New</a>
+            </div>
+        </div>
+
+        <div class="row justify-content-md-center">
+            <div class="col-4">
+                <h4>Sort According to : </h4>
+            </div>
+            <div class="col-1">
+                <a href="/filter1" class="btn btn-info btn-sm">Availability</a>
+            </div>
+            <div class="col-2">
+                <a href="/filter2" class="btn btn-info btn-sm">Date Added</a>
+            </div>
+            <div class="col-2">
+                <a href="/filter3" class="btn btn-info btn-sm">Product's Price</a>
+            </div>
+        </div>
+
     </div>
     {% endif %}
 
     <div class="mt-5 col-8">
-        <div class="container text-center">
+        <div class="container text-center  justify-content-md-center">
 
             <div class="row text-muted p-1">
-                <div class="col-8">Product Name</div>
-                <div class="col-2">Current Price</div>
+                <div class="col-2">Product Image</div>
+                <div class="col-4">Product Name</div>
+                <div class="col-1">Current Price</div>
+                <div class="col-2 text-center">availability</div>
+                <div class="col-1 text-center">Date</div>
                 <div class="col-1 text-center">View </div>
                 <div class="col-1">Delete</div>
             </div>
@@ -26,12 +69,17 @@
 
             {% for link in links %}
             <div class="row p-1">
-                <div class="col-8">{{link['product']}}</div>
-                <div class="col-2">{{link['price']}}</div>
-                <div class="col-1"><a href="{{link['url']}}" class="btn btn-primary">View</a> </div>
+                <div class="col-2">
+                    <img src="{{link['image_url']}}" height=120 width=120 />
+                </div>
+                <div class="col-5">{{link['product']}}</div>
+                <div class="col-1">{{link['price']}}</div>
+                <div class="col-1 text-center">{{link['availability']}}</div>
+                <div class="col-1 text-center">{{link['link_date']}}</div>
+                <div class="col-1"><a href="{{link['url']}}" class="btn btn-primary btn-sm">View</a> </div>
                 <div class="col-1">
                     <form action="/delete/{{link['id']}}" method="POST">
-                        <input type='submit' value="Delete" class="btn btn-danger">
+                        <input type='submit' value="Delete" class="btn btn-danger btn-sm">
                     </form>
                 </div>
                 <hr>
