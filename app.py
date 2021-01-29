@@ -55,8 +55,6 @@ def register():
 
     return render_template('register.html', form=form)
 
-# User Login
-
 
 # User-Login route
 @app.route('/login', methods=['GET', 'POST'])
@@ -136,37 +134,28 @@ def dashboard():
 # This is not going to be an endpoint, used only for testing scrapper
 @app.route('/scrape', methods=['POST'])
 def scrapeURL():
-
     detail = get_product_details(request.form['url'])
-
     print(detail)
     return render_template("dashboard.html", detail=detail)
 
+
 # add delete
-
-
 @app.route('/delete/<string:id>', methods=['POST'])
 @is_logged_in
 def delete_url(id):
     # Create cursor
     cur = get_db_connection()
-
     # Execute
     cur.execute("DELETE FROM links WHERE id = ?", [id])
-
     # Commit to DB
     cur.commit()
-
     # Close connection
     cur.close()
-
     flash('URL Deleted', 'success')
-
     return redirect(url_for('dashboard'))
 
+
 # add url route
-
-
 @app.route('/add', methods=['GET', 'POST'])
 @is_logged_in
 def add_url():
@@ -178,14 +167,12 @@ def add_url():
         print(detail)
         # Create cursor
         conn = get_db_connection()
-
-        conn.execute("INSERT INTO links(url ,product, price, userid) VALUES(?,?,?,?)",
-                     (detail['url'], detail['name'], detail['price'], userid))
-
+        conn.execute("INSERT INTO links(url ,product, price, availability, image_url, userid) VALUES(?,?,?,?,?,?)",
+                     (detail['url'], detail['name'], detail['price'], detail['availability'], detail['image_url'], userid))
         # connection commit
         conn.commit()
         conn.close()
-        redirect(url_for("dashboard"))
+        redirect(url_for("index"))
         flash("URL Added", 'success')
 
     return render_template("addLink.html", form=form)
