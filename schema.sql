@@ -13,6 +13,8 @@ CREATE TABLE links (
     url VARCHAR(100) NOT NULL,
     product VARCHAR(200) NOT NULL,
     price FLOAT(2) NOT NULL,
-    userid INTEGER NOT NULL ,
+    availability VARCHAR(50) NOT NULL,
+    image_url VARCHAR(150),
+    userid INTEGER NOT NULL,
     link_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
