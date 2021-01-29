@@ -27,10 +27,13 @@ def get_product_details(url):
 
     title = soup.find(id="productTitle").get_text().strip()
     price = soup.find(id="priceblock_dealprice")
+    print(price)
     if price == None:
         price = soup.find(id="priceblock_ourprice")
+        print(price)
     if price == None:
         price = soup.find(id="priceblock_salesprice")
+        print(price)
 
     converted_price = float(re.sub(r"[^\d.]", "", price.get_text()))
 
