@@ -17,11 +17,9 @@ app = Flask(__name__)
 
 @app.route('/')
 def index():
-    conn = get_db_connection()
-
-    users = conn.execute('SELECT * FROM users').fetchall()
-    conn.close()
-    return render_template("home.html", users=users)
+    if session is not None:
+        redirect(url_for('dashboard'))
+    return render_template("home.html")
 
 
 class RegisterForm(Form):
@@ -51,7 +49,7 @@ def register():
         conn.commit()
         conn.close()
         flash("You are now registered and can Login", "success")
-        return redirect(url_for('index'))
+        return redirect(url_for('login'))
 
     return render_template('register.html', form=form)
 
@@ -111,7 +109,7 @@ def is_logged_in(f):
 @app.route("/logout")
 def logout():
     session.clear()
-    flash("You are now logout.", "success")
+    flash("You are now logout.", "warning")
     return redirect(url_for("login"))
 
 
@@ -152,7 +150,7 @@ def delete_url(id):
     cur.commit()
     # Close connection
     cur.close()
-    flash('URL Deleted', 'success')
+    flash('URL Deleted', 'danger')
     return redirect(url_for('dashboard'))
 
 
