@@ -1,38 +1,38 @@
 <nav class="navbar navbar-expand-md navbar-dark bg-dark">
-  <div class="container-fluid">
-    <a class="navbar-brand" href="/">My FlaskApp</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsExampleDefault"
-      aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+  <div class="container-fluid title">
+    <a class="navbar-brand" href="/">
+      <h2><i class="fas fa-coins pt-1"></i>&nbsp;&nbsp;Pocket Partner</h2>
+    </a>
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-toggle="collapse"
+      data-target="#navbarSupportedContent"
+      aria-controls="navbarSupportedContent"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
       <span class="navbar-toggler-icon"></span>
     </button>
 
-    <div class="collapse navbar-collapse" id="navbarsExampleDefault">
-      <ul class="navbar-nav me-auto mb-2 mb-md-0">
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto">
         {% if session.logged_in %}
-        <li class="nav-item active">
-          <a class="nav-link" aria-current="page" href="/logout">Logout</a>
-        </li>
-        <li class="nav-item active">
-          <a class="nav-link" aria-current="page" href="/dashboard">Dashboard</a>
+        <li class="nav-item mr-5">
+          <a class="nav-link" aria-current="page" href="/logout">
+            <i class="fa fa-sign-out-alt"></i>
+            Logout
+          </a>
         </li>
         {% else %}
-        <li class="nav-item active">
-          <a class="nav-link" aria-current="page" href="/register">Register</a>
-        </li>
         <li class="nav-item">
-          <a class="nav-link" href="#">Link</a>
+          <a class="nav-link" aria-current="page" href="/register"><i class="fa fa-user-plus"></i>Register</a>
         </li>
-        <li class="nav-item active">
-          <a class="nav-link" aria-current="page" href="/login">Login</a>
+        <li class="nav-item mr-5">
+          <a class="nav-link" aria-current="page" href="/login"><i class="fa fa-sign-in-alt"></i>Login</a>
         </li>
         {% endif %}
-
       </ul>
-
-      <form class="d-flex">
-        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-        <button class="btn btn-outline-success" type="submit">Search</button>
-      </form>
     </div>
   </div>
 </nav>

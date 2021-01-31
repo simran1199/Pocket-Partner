@@ -38,7 +38,7 @@ def get_product_details(url):
     if availability == None:
         availability = "N/A"
     else:
-        availability = availability.get_text().strip()
+        availability = availability.get_text().strip()[:-1]
     # product's image
     img_div = soup.find(id="imgTagWrapperId")
     # a string in Json format

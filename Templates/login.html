@@ -1,17 +1,34 @@
 {% extends 'layout.html' %}
 
 {% block body %}
-<h1>Login</h1>
-{% include "Includes/messages.html" %}
-<form method='POST' action=" ">
-    <div class="form-group">
-        <label>Email</label>
-        <input type="email" name="email" class="form-control" value={{request.form.email}}>
+
+<section id="cover mt-5" class="min-vh-100">
+    <div id="cover-caption">
+        
+        <div class="container mt-5 pt-2">
+            <div class="row">
+                <div class="col-xl-5 col-lg-6 col-md-8 col-sm-10 mx-auto text-center form card py-2">
+                    <span class="py-2">
+                        <h2 class="text-truncate">Login To Start Saving</h2>
+                    <hr>
+                    </span>
+                    <div class="px-2">
+                        <form method='POST' action=" " class="justify-content-center">
+                            <div class="form-group">
+                                <label class="text-muted">Email</label>
+                                <input type="email" name="email" class="form-control" placeholder="Jane Doe" value={{request.form.email}}>
+                            </div>
+                            <div class="form-group">
+                                <label class="text-muted">Password</label>
+                                <input type="password" name="password" class="form-control" placeholder="jane.doe@example.com" value={{request.form.password}}>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="form-group">
-        <label>Password</label>
-        <input type="password" name="password" class="form-control" value={{request.form.password}}>
-    </div>
-    <button type="submit" class="btn btn-primary">Submit</button>
-</form>
+</section>
+
 {% endblock %}

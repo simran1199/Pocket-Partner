@@ -17,11 +17,9 @@ app = Flask(__name__)
 
 @app.route('/')
 def index():
-    conn = get_db_connection()
-
-    users = conn.execute('SELECT * FROM users').fetchall()
-    conn.close()
-    return render_template("home.html", users=users)
+    if session is not None:
+        redirect(url_for('dashboard'))
+    return render_template("home.html")
 
 
 class RegisterForm(Form):
@@ -51,7 +49,7 @@ def register():
         conn.commit()
         conn.close()
         flash("You are now registered and can Login", "success")
-        return redirect(url_for('index'))
+        return redirect(url_for('login'))
 
     return render_template('register.html', form=form)
 
@@ -111,13 +109,13 @@ def is_logged_in(f):
 @app.route("/logout")
 def logout():
     session.clear()
-    flash("You are now logout.", "success")
+    flash("You are now logout.", "warning")
     return redirect(url_for("login"))
 
 
 # Add new url //links form
 class LinkForm(Form):
-    url = StringField('Url')
+    url = StringField('Add New Product')
 
 
 # dashboard
@@ -125,18 +123,19 @@ class LinkForm(Form):
 @is_logged_in
 def dashboard():
     conn = get_db_connection()
-    links = conn.execute('SELECT * FROM links WHERE userid = ?',
+    form = LinkForm(request.form)
+    links = conn.execute('SELECT * FROM links WHERE userid = ? ORDER BY link_date DESC',
                          [session['userid']]).fetchall()
     conn.close()
-    return render_template("dashboard.html", links=links)
+    return render_template("dashboard.html", links=links, form=form)
 
 
 # This is not going to be an endpoint, used only for testing scrapper
-@app.route('/scrape', methods=['POST'])
-def scrapeURL():
-    detail = get_product_details(request.form['url'])
-    print(detail)
-    return render_template("dashboard.html", detail=detail)
+# @app.route('/scrape', methods=['POST'])
+# def scrapeURL():
+#     detail = get_product_details(request.form['url'])
+#     print(detail)
+#     return render_template("dashboard.html", detail=detail, form=form)
 
 
 # add delete
@@ -151,7 +150,7 @@ def delete_url(id):
     cur.commit()
     # Close connection
     cur.close()
-    flash('URL Deleted', 'success')
+    flash('URL Deleted', 'danger')
     return redirect(url_for('dashboard'))
 
 
@@ -172,10 +171,10 @@ def add_url():
         # connection commit
         conn.commit()
         conn.close()
-        redirect(url_for("index"))
+        redirect(url_for("dashboard"))
         flash("URL Added", 'success')
 
-    return render_template("addLink.html", form=form)
+    return redirect(url_for('dashboard'))
 
 
 # sorting based on price
