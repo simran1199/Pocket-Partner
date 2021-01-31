@@ -117,7 +117,7 @@ def logout():
 
 # Add new url //links form
 class LinkForm(Form):
-    url = StringField('Url')
+    url = StringField('Add New Product')
 
 
 # dashboard
@@ -125,18 +125,19 @@ class LinkForm(Form):
 @is_logged_in
 def dashboard():
     conn = get_db_connection()
-    links = conn.execute('SELECT * FROM links WHERE userid = ?',
+    form = LinkForm(request.form)
+    links = conn.execute('SELECT * FROM links WHERE userid = ? ORDER BY link_date DESC',
                          [session['userid']]).fetchall()
     conn.close()
-    return render_template("dashboard.html", links=links)
+    return render_template("dashboard.html", links=links, form=form)
 
 
 # This is not going to be an endpoint, used only for testing scrapper
-@app.route('/scrape', methods=['POST'])
-def scrapeURL():
-    detail = get_product_details(request.form['url'])
-    print(detail)
-    return render_template("dashboard.html", detail=detail)
+# @app.route('/scrape', methods=['POST'])
+# def scrapeURL():
+#     detail = get_product_details(request.form['url'])
+#     print(detail)
+#     return render_template("dashboard.html", detail=detail, form=form)
 
 
 # add delete
@@ -172,10 +173,10 @@ def add_url():
         # connection commit
         conn.commit()
         conn.close()
-        redirect(url_for("index"))
+        redirect(url_for("dashboard"))
         flash("URL Added", 'success')
 
-    return render_template("addLink.html", form=form)
+    return redirect(url_for('dashboard'))
 
 
 # sorting based on price
