@@ -4,6 +4,7 @@ from wtforms import Form, StringField, TextAreaField, PasswordField, validators
 from passlib.hash import sha256_crypt
 from functools import wraps
 from scrapper import get_product_details
+from hashlib import md5
 
 
 def get_db_connection():
@@ -109,7 +110,7 @@ def is_logged_in(f):
 @app.route("/logout")
 def logout():
     session.clear()
-    flash("You are now logged it.", "warning")
+    flash("You are now LoggedOut.", "warning")
     return redirect(url_for("login"))
 
 
@@ -118,24 +119,23 @@ class LinkForm(Form):
     url = StringField('Add New Product')
 
 
+def gravatar(email, size):
+    digest = md5(email.lower().encode('utf-8')).hexdigest()
+    return 'https://www.gravatar.com/avatar/{}?d=identicon&s={}'.format(digest, size)
+
 # dashboard
+
+
 @app.route('/dashboard')
 @is_logged_in
 def dashboard():
     conn = get_db_connection()
     form = LinkForm(request.form)
+    glink = gravatar(session['email'], 128)
     links = conn.execute('SELECT * FROM links WHERE userid = ? ORDER BY link_date DESC',
                          [session['userid']]).fetchall()
     conn.close()
-    return render_template("dashboard.html", links=links, form=form)
-
-
-# This is not going to be an endpoint, used only for testing scrapper
-# @app.route('/scrape', methods=['POST'])
-# def scrapeURL():
-#     detail = get_product_details(request.form['url'])
-#     print(detail)
-#     return render_template("dashboard.html", detail=detail, form=form)
+    return render_template("dashboard.html", links=links, form=form, glink=glink)
 
 
 # add delete
@@ -175,39 +175,6 @@ def add_url():
         flash("URL Added", 'success')
 
     return redirect(url_for('dashboard'))
-
-
-# sorting based on price
-@app.route('/filter3')
-@is_logged_in
-def sorting3():
-    conn = get_db_connection()
-    links = conn.execute('SELECT * FROM links WHERE userid = ? ORDER BY price ASC',
-                         [session['userid']]).fetchall()
-    conn.close()
-    return render_template("dashboard.html", links=links)
-
-
-# sorting based on date(when the product was added)
-@app.route('/filter2')
-@is_logged_in
-def sorting2():
-    conn = get_db_connection()
-    links = conn.execute('SELECT * FROM links WHERE userid = ? ORDER BY link_date DESC',
-                         [session['userid']]).fetchall()
-    conn.close()
-    return render_template("dashboard.html", links=links)
-
-
-# sorting based on price
-@app.route('/filter1')
-@is_logged_in
-def sorting1():
-    conn = get_db_connection()
-    links = conn.execute('SELECT * FROM links WHERE userid = ? AND availability LIKE "%In Stock%"',
-                         [session['userid']]).fetchall()
-    conn.close()
-    return render_template("dashboard.html", links=links)
 
 
 if __name__ == "__main__":
