@@ -123,9 +123,8 @@ def gravatar(email, size):
     digest = md5(email.lower().encode('utf-8')).hexdigest()
     return 'https://www.gravatar.com/avatar/{}?d=identicon&s={}'.format(digest, size)
 
+
 # dashboard
-
-
 @app.route('/dashboard')
 @is_logged_in
 def dashboard():
