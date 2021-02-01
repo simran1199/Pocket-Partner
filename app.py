@@ -18,7 +18,7 @@ app = Flask(__name__)
 
 @app.route('/')
 def index():
-    if session is not None:
+    if "logged_in" in session:
         redirect(url_for('dashboard'))
     return render_template("home.html")
 
