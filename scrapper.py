@@ -14,7 +14,7 @@ def extract_url(url):
     index = index + 10
     current_url = ""
     current_url = url[:index]
-    print(current_url)
+    # print(current_url)
     return current_url
 
 
@@ -27,10 +27,10 @@ def get_product_details(url):
     title = soup.find(id="productTitle").get_text().strip()
     # product's price
     price = soup.find(id="priceblock_dealprice")
-    print(price)
+    # print(price)
     if price == None:
         price = soup.find(id="priceblock_ourprice")
-        print(price)
+        # print(price)
     if price == None:
         price = soup.find(id="priceblock_salesprice")
     # product's availability

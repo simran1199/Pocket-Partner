@@ -7,6 +7,8 @@ from scrapper import get_product_details
 from hashlib import md5
 from mail import send_mail
 from bs4 import BeautifulSoup
+import schedule
+import time
 
 
 def get_db_connection():
@@ -178,27 +180,50 @@ def add_url():
     return redirect(url_for('dashboard'))
 
 
+def checkFunction():
+    # get db conn
+    conn = get_db_connection()
+    products = conn.execute(
+        "SELECT * FROM links INNER JOIN users ON links.userid=users.id").fetchall()
+    conn.close()
+
+    for product in products:
+        newDetails = get_product_details(product['url'])
+        print("Product: "+product['product'])
+        print("Old Price: "+product['price'])
+        print("New Price: "+newDetails['price'])
+        if newDetails['price'] < 100:
+            send_mail(product, newDetails)
+            print('Email has been sent to '+product['name'])
+        # Create cursor
+        conn = get_db_connection()
+        conn.execute("UPDATE links SET price=? WHERE id=?",
+                     (newDetails['price'], product['id']))
+        # connection commit
+        conn.commit()
+        conn.close()
+
+# Auto Scheduler doesn't run concurrently with Flask Server
+# Threading needs to be implemented to automate both tasks
+# To check the updation and email sending hit below endpoint
+
+# schedule.every(1).minutes.do(checkFunction)
+# while True:
+#     schedule.run_pending()
+#     time.sleep(5)
+
+# Updation Check Endpoint
+# Hit this endpoint to manually update the Prices
+# Can be given as an option to the user to refresh prices manually
+
+
+@app.route('/update')
+@is_logged_in
+def update():
+    checkFunction()
+    return redirect(url_for("dashboard"))
+
+
 if __name__ == "__main__":
     app.secret_key = 'secret123'
     app.run(debug=True)
-
-def scheduler():
-    # new product's price
-    nprice=get_product_details(url);
-
-    #get db conn
-    conn = get_db_connection()
-    cur = conn.cursor()
-
-    url =cur.execute("SELECT * FROM links")
-    url =cur.fetchall()
-
-    for i in url:
-        if(nprice['price'] < link['price'])
-        send_mail()
-        flash('email has been sent!!!')
-    update_db=("SELECT price FROM links UPDATE links SET price = nprice['price'], WHERE id= link['id']")
-
-    conn.commit()
-    conn.close()
-    
