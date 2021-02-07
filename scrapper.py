@@ -14,7 +14,7 @@ def extract_url(url):
     index = index + 10
     current_url = ""
     current_url = url[:index]
-    print(current_url)
+    # print(current_url)
     return current_url
 
 
@@ -27,10 +27,10 @@ def get_product_details(url):
     title = soup.find(id="productTitle").get_text().strip()
     # product's price
     price = soup.find(id="priceblock_dealprice")
-    print(price)
+    # print(price)
     if price == None:
         price = soup.find(id="priceblock_ourprice")
-        print(price)
+        # print(price)
     if price == None:
         price = soup.find(id="priceblock_salesprice")
     # product's availability
@@ -55,26 +55,3 @@ def get_product_details(url):
     details = {"name": title, "price": converted_price, "url": url,
                "availability": availability, "image_url": image}
     return details
-
-
-# for sending emails
-def send_mail():
-    server = smtplib.SMTP('smtp.gmail.com', 587)
-    server.ehlo()
-    server.starttls()
-    server.ehlo()
-
-    # here i have used my email with temporary password for senders email
-    server.login('simran3579singh@gmail.com', 'irokaeeswojzasfu')
-
-    subject = 'the price fell down'
-    body = 'check the amazon link => https://www.amazon.in/Fujifilm-Instax-Mini-Instant-Camera/dp/B08527W1MF/ref=sr_1_1_sspa?dchild=1&keywords=instax+mini&qid=1611431864&sr=8-1-spons&psc=1&spLa=ZW5jcnlwdGVkUXVhbGlmaWVyPUExTThVWEkyNzE0UkpCJmVuY3J5cHRlZElkPUEwMDc3NjEwM0JHREdYVEdQRkJEVyZlbmNyeXB0ZWRBZElkPUEwMDg5NzMzMzVZRlJYVFlOVUk0JndpZGdldE5hbWU9c3BfYXRmJmFjdGlvbj1jbGlja1JlZGlyZWN0JmRvTm90TG9nQ2xpY2s9dHJ1ZQ=='
-    msg = f"Subject: {subject}\n\n{body}"
-    server.sendmail(
-        'simran3579singh@gmail.com',
-        # (recievers email) use your email here for recieving emails.
-        '184085@nith.ac.in',
-        msg
-    )
-    print('email sent')
-    server.quit()

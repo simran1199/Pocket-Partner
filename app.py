@@ -4,6 +4,11 @@ from wtforms import Form, StringField, TextAreaField, PasswordField, validators
 from passlib.hash import sha256_crypt
 from functools import wraps
 from scrapper import get_product_details
+from hashlib import md5
+from mail import send_mail
+from bs4 import BeautifulSoup
+import schedule
+import time
 
 
 def get_db_connection():
@@ -109,7 +114,7 @@ def is_logged_in(f):
 @app.route("/logout")
 def logout():
     session.clear()
-    flash("You are now logged it.", "warning")
+    flash("You are now LoggedOut.", "warning")
     return redirect(url_for("login"))
 
 
@@ -118,24 +123,22 @@ class LinkForm(Form):
     url = StringField('Add New Product')
 
 
+def gravatar(email, size):
+    digest = md5(email.lower().encode('utf-8')).hexdigest()
+    return 'https://www.gravatar.com/avatar/{}?d=identicon&s={}'.format(digest, size)
+
+
 # dashboard
 @app.route('/dashboard')
 @is_logged_in
 def dashboard():
     conn = get_db_connection()
     form = LinkForm(request.form)
+    glink = gravatar(session['email'], 128)
     links = conn.execute('SELECT * FROM links WHERE userid = ? ORDER BY link_date DESC',
                          [session['userid']]).fetchall()
     conn.close()
-    return render_template("dashboard.html", links=links, form=form)
-
-
-# This is not going to be an endpoint, used only for testing scrapper
-# @app.route('/scrape', methods=['POST'])
-# def scrapeURL():
-#     detail = get_product_details(request.form['url'])
-#     print(detail)
-#     return render_template("dashboard.html", detail=detail, form=form)
+    return render_template("dashboard.html", links=links, form=form, glink=glink)
 
 
 # add delete
@@ -177,37 +180,48 @@ def add_url():
     return redirect(url_for('dashboard'))
 
 
-# sorting based on price
-@app.route('/filter3')
-@is_logged_in
-def sorting3():
+def checkFunction():
+    # get db conn
     conn = get_db_connection()
-    links = conn.execute('SELECT * FROM links WHERE userid = ? ORDER BY price ASC',
-                         [session['userid']]).fetchall()
+    products = conn.execute(
+        "SELECT * FROM links INNER JOIN users ON links.userid=users.id").fetchall()
     conn.close()
-    return render_template("dashboard.html", links=links)
+
+    for product in products:
+        newDetails = get_product_details(product['url'])
+        print("Product: "+product['product'])
+        print("Old Price: "+product['price'])
+        print("New Price: "+newDetails['price'])
+        if newDetails['price'] < 100:
+            send_mail(product, newDetails)
+            print('Email has been sent to '+product['name'])
+        # Create cursor
+        conn = get_db_connection()
+        conn.execute("UPDATE links SET price=? WHERE id=?",
+                     (newDetails['price'], product['id']))
+        # connection commit
+        conn.commit()
+        conn.close()
+
+# Auto Scheduler doesn't run concurrently with Flask Server
+# Threading needs to be implemented to automate both tasks
+# To check the updation and email sending hit below endpoint
+
+# schedule.every(1).minutes.do(checkFunction)
+# while True:
+#     schedule.run_pending()
+#     time.sleep(5)
+
+# Updation Check Endpoint
+# Hit this endpoint to manually update the Prices
+# Can be given as an option to the user to refresh prices manually
 
 
-# sorting based on date(when the product was added)
-@app.route('/filter2')
+@app.route('/update')
 @is_logged_in
-def sorting2():
-    conn = get_db_connection()
-    links = conn.execute('SELECT * FROM links WHERE userid = ? ORDER BY link_date DESC',
-                         [session['userid']]).fetchall()
-    conn.close()
-    return render_template("dashboard.html", links=links)
-
-
-# sorting based on price
-@app.route('/filter1')
-@is_logged_in
-def sorting1():
-    conn = get_db_connection()
-    links = conn.execute('SELECT * FROM links WHERE userid = ? AND availability LIKE "%In Stock%"',
-                         [session['userid']]).fetchall()
-    conn.close()
-    return render_template("dashboard.html", links=links)
+def update():
+    checkFunction()
+    return redirect(url_for("dashboard"))
 
 
 if __name__ == "__main__":
