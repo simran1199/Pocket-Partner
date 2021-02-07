@@ -5,6 +5,8 @@ from passlib.hash import sha256_crypt
 from functools import wraps
 from scrapper import get_product_details
 from hashlib import md5
+from mail import send_mail
+from bs4 import BeautifulSoup
 
 
 def get_db_connection():
@@ -179,3 +181,24 @@ def add_url():
 if __name__ == "__main__":
     app.secret_key = 'secret123'
     app.run(debug=True)
+
+def scheduler():
+    # new product's price
+    nprice=get_product_details(url);
+
+    #get db conn
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    url =cur.execute("SELECT * FROM links")
+    url =cur.fetchall()
+
+    for i in url:
+        if(nprice['price'] < link['price'])
+        send_mail()
+        flash('email has been sent!!!')
+    update_db=("SELECT price FROM links UPDATE links SET price = nprice['price'], WHERE id= link['id']")
+
+    conn.commit()
+    conn.close()
+    
