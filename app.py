@@ -17,7 +17,7 @@ app = Flask(__name__)
 
 @app.route('/')
 def index():
-    if session is not None:
+    if "logged_in" in session:
         redirect(url_for('dashboard'))
     return render_template("home.html")
 
@@ -109,7 +109,7 @@ def is_logged_in(f):
 @app.route("/logout")
 def logout():
     session.clear()
-    flash("You are now logout.", "warning")
+    flash("You are now logged it.", "warning")
     return redirect(url_for("login"))
 
 
