@@ -9,6 +9,7 @@ from mail import send_mail
 from bs4 import BeautifulSoup
 import schedule
 import time
+import threading
 
 
 def get_db_connection():
@@ -182,6 +183,7 @@ def add_url():
 
 def checkFunction():
     # get db conn
+    print("checkFunction Called")
     conn = get_db_connection()
     products = conn.execute(
         "SELECT * FROM links INNER JOIN users ON links.userid=users.id").fetchall()
@@ -190,9 +192,9 @@ def checkFunction():
     for product in products:
         newDetails = get_product_details(product['url'])
         print("Product: "+product['product'])
-        print("Old Price: "+product['price'])
-        print("New Price: "+newDetails['price'])
-        if newDetails['price'] < 100:
+        print(product['price'])
+        print(newDetails['price'])
+        if newDetails['price'] < product['price']:
             send_mail(product, newDetails)
             print('Email has been sent to '+product['name'])
         # Create cursor
@@ -207,10 +209,17 @@ def checkFunction():
 # Threading needs to be implemented to automate both tasks
 # To check the updation and email sending hit below endpoint
 
-# schedule.every(1).minutes.do(checkFunction)
-# while True:
-#     schedule.run_pending()
-#     time.sleep(5)
+
+def updateThread():
+    print("Update Thread Called")
+    print(threading.current_thread().name)
+    # schedule.every(1).minutes.do(checkFunction)
+    schedule.every(1).hours.do(checkFunction)
+    while True:
+        # print("While loop of updateThread")
+        schedule.run_pending()
+        time.sleep(5)
+
 
 # Updation Check Endpoint
 # Hit this endpoint to manually update the Prices
@@ -225,5 +234,10 @@ def update():
 
 
 if __name__ == "__main__":
+    threading.Thread(target=updateThread).start()
     app.secret_key = 'secret123'
-    app.run(debug=True)
+
+    # For Production/Deployment
+    app.run()
+    # For Development
+    # app.run(debug=True)

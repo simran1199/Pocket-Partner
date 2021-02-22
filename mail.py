@@ -7,8 +7,9 @@ def send_mail(frmTable, frmScrapper):
     server.ehlo()
     server.starttls()
     server.ehlo()
-
-    server.login('Apni email do :p', 'Apna password Chepo')
+    email = 'pcktpartner@gmail.com'
+    password = 'pocketpartner@4'
+    server.login(email, password)
 
     subject = "Yay, The Price Dropped!!"
     body1 = f"Hey {frmTable['name']}, \n\n"
@@ -20,7 +21,7 @@ def send_mail(frmTable, frmScrapper):
     body = body1 + body2 + body3 + body4 + body5 + body6
     msg = f"Subject: {subject}\n\n{body}"
 
-    server.sendmail('Apni email do :p', frmTable['email'], msg)
+    server.sendmail(email, frmTable['email'], msg)
     # print('Email has been sent to '+email)
 
     server.quit()
