@@ -19,6 +19,7 @@ def get_db_connection():
 
 
 app = Flask(__name__, template_folder='Templates')
+app.config['SECRET_KEY'] = 'secret123'
 # app.config['EXPLAIN_TEMPLATE_LOADING'] = True
 
 
@@ -240,7 +241,6 @@ def thread_start():
 
     # For Production/Deployment
 if __name__ == '__main__':
-    app.secret_key = 'secret123'
     app.run(debug=True, threaded=True, use_reloader=False)
 
 
