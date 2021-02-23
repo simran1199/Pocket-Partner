@@ -237,7 +237,6 @@ def update():
 @app.before_first_request
 def thread_start():
     threading.Thread(target=updateThread).start()
-    app.secret_key = 'secret123'
 
     # For Production/Deployment
 if __name__ == '__main__':
