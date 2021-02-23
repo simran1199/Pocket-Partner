@@ -18,7 +18,8 @@ def get_db_connection():
     return conn
 
 
-app = Flask(__name__, template_folder='templates/')
+app = Flask(__name__, template_folder='Templates')
+# app.config['EXPLAIN_TEMPLATE_LOADING'] = True
 
 
 @app.route('/')
@@ -233,11 +234,22 @@ def update():
     return redirect(url_for("dashboard"))
 
 
-if __name__ == "__main__":
+@app.before_first_request
+def thread_start():
     threading.Thread(target=updateThread).start()
     app.secret_key = 'secret123'
 
     # For Production/Deployment
-    app.run()
-    # For Development
-    # app.run(debug=True)
+if __name__ == '__main__':
+    app.secret_key = 'secret123'
+    app.run(debug=True, threaded=True, use_reloader=False)
+
+
+# if __name__ == "__main__":
+#     threading.Thread(target=updateThread).start()
+#     app.secret_key = 'secret123'
+
+#     # For Production/Deployment
+#     app.run()
+#     # For Development
+#     # app.run(debug=True)
