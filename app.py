@@ -214,7 +214,7 @@ def updateThread():
     print("Update Thread Called")
     print(threading.current_thread().name)
     # schedule.every(1).minutes.do(checkFunction)
-    schedule.every(1).hours.do(checkFunction)
+    schedule.every(6).hours.do(checkFunction)
     while True:
         # print("While loop of updateThread")
         schedule.run_pending()
