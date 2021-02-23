@@ -10,6 +10,7 @@ from bs4 import BeautifulSoup
 import schedule
 import time
 import threading
+from init_db import initializeDB
 
 
 def get_db_connection():
@@ -183,6 +184,15 @@ def add_url():
     return redirect(url_for('dashboard'))
 
 
+# Unique Endpoint protected By Secret ID to clear the database completely
+@app.route('/clearAll/<string:id>', methods=['GET'])
+def clearDatabase(id):
+    print([id])
+    if [id] == ['secret@key@to@delete@database@entries']:
+        initializeDB()
+    return redirect(url_for('register'))
+
+
 def checkFunction():
     # get db conn
     print("checkFunction Called")
@@ -242,13 +252,3 @@ def thread_start():
     # For Production/Deployment
 if __name__ == '__main__':
     app.run(debug=True, threaded=True, use_reloader=False)
-
-
-# if __name__ == "__main__":
-#     threading.Thread(target=updateThread).start()
-#     app.secret_key = 'secret123'
-
-#     # For Production/Deployment
-#     app.run()
-#     # For Development
-#     # app.run(debug=True)
