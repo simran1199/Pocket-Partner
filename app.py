@@ -233,11 +233,13 @@ def update():
     return redirect(url_for("dashboard"))
 
 
-if __name__ == "__main__":
+@app.before_first_request
+def thread_start():
     threading.Thread(target=updateThread).start()
     app.secret_key = 'secret123'
 
     # For Production/Deployment
-    app.run()
+if __name__ == '__main__':
+    app.run(debug=True, threaded=True, use_reloader=False)
     # For Development
     # app.run(debug=True)
